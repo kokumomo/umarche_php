@@ -45,8 +45,10 @@ if(!empty($_POST['btn_submit'])){
     メールアドレス:
     <?php echo $_POST['email'] ;?>
     <br>
+    <input type="submit" name="back" value="戻る">
     <input type="submit" name="btn_submit" value="送信する">
-    <input type="hidden" name="yourname" value="<?php echo $_POST['your_name'] ;?>">
+    <!-- POST/GETは一度通信してしまうと入力した値が消えてしまうので、画面が切り替わってもデータを保持するためにhiddenを設定 -->
+    <input type="hidden" name="your_name" value="<?php echo $_POST['your_name'] ;?>">
     <input type="hidden" name="email" value="<?php echo $_POST['email'] ;?>">
     </form>
 
@@ -60,10 +62,11 @@ if(!empty($_POST['btn_submit'])){
     <?php if($pageFlag === 0) : ?>
     <form method="POST" action="input.php">
     氏名
-    <input type="text" name="your_name">
+    <!-- 戻るボタンを押しても値を残すためにif文を追加 -->
+    <input type="text" name="your_name" value="<?php echo $_POST['your_name'] ; ?>">
     <br>
     メールアドレス
-    <input type="email" name="email">
+    <input type="email" name="email" value="<?php echo $_POST['email'] ; ?>">
     <br>
     <input type="submit" name="btn_confirm" value="確認する">
     </form>

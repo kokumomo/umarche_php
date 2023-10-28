@@ -46,7 +46,7 @@ if(!empty($_POST['btn_submit'])){
     <?php echo $_POST['email'] ;?>
     <br>
     <input type="submit" name="btn_submit" value="送信する">
-    <input type="hidden" name="yourname" value="<?php echo $_POST['your_name'] ;?>">
+    <input type="hidden" name="your_name" value="<?php echo $_POST['your_name'] ;?>">
     <input type="hidden" name="email" value="<?php echo $_POST['email'] ;?>">
     </form>
 

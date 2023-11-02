@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+require 'validation.php';
+
 header('X-FRAME-OPTIONS:DENY');
 
 if(!empty($_POST)){
@@ -15,8 +17,11 @@ function h($str)
 }
 
 $pageFlag = 0;
+// ローカル変数$errorsを外からアクセスできるようにエラーを入れる変数を作成
+$errors = validation($_POST);
 
-if(!empty($_POST['btn_confirm'])){
+// エラーが空だったらという条件を追加
+if(!empty($_POST['btn_confirm']) && empty($errors)){
     $pageFlag = 1;
 }
 if(!empty($_POST['btn_submit'])){
@@ -96,6 +101,17 @@ if(!empty($_POST['btn_submit'])){
     $token = $_SESSION['csrfToken'];
     ?>
 
+    <!-- 入力画面にエラーを表示する為の処理 -->
+    <?php if(!empty($errors) && !empty($_POST['btn_confirm']) ) : ?>
+    <?php echo '<ul>' ;?>  
+    <?php
+      foreach($errors as $error){
+        echo '<li>' . $error . '</li>';
+      }
+    ?>
+    <?php echo '</ul>' ;?>  
+      <?php endif ;?>
+
     <form method="POST" action="input.php">
     氏名
     <input type="text" name="your_name" value="<?php echo h($_POST['your_name']) ; ?>">
@@ -107,12 +123,9 @@ if(!empty($_POST['btn_submit'])){
     <input type="url" name="url" value="<?php echo h($_POST['url']) ; ?>">
     <br>
     性別
-    <!-- 「戻る」ボタンを押してもチェックを入れた箇所を保持するための処理 -->
-    <!-- genderが空ではなくて、0が入力されたら -->
     <input type="radio" name="gender" value="0" 
     <?php if(!empty($_POST['gender']) && $_POST['gender'] === '0')
     { echo 'checked'; } ?>>男性
-    <!--  genderが空ではなくて、1が入力されたら-->
     <input type="radio" name="gender" value="1"
     <?php if(!empty($_POST['gender']) && $_POST['gender'] === '1')
     { echo 'checked'; } ?>>女性

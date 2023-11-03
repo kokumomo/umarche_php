@@ -133,7 +133,7 @@ if(!empty($_POST['btn_submit'])){
     年齢
     <select name="age" id="">
       <option value="">選択して下さい</option>
-      <option value="1" selected>20歳〜29歳</option>
+      <option value="1">20歳〜29歳</option>
       <option value="2">30歳〜39歳</option>
       <option value="3">40歳〜49歳</option>
       <option value="4">50歳〜59歳</option>
@@ -141,9 +141,7 @@ if(!empty($_POST['btn_submit'])){
     </select>
     <br>
     お問い合わせ内容
-    <textarea name="contact" id="" cols="" rows="">
-      <?php echo h($_POST['contact']) ; ?>
-    </textarea>
+    <textarea name="contact" id="" cols="" rows=""><?php echo h($_POST['contact']) ; ?></textarea>
     <br>
     <input type="checkbox" name="caution" value="1">注意事項にチェックする
   

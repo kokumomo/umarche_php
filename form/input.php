@@ -1,5 +1,7 @@
 <?php
-
+// RDB:リレーショナルデータベース
+// 複数のテーブルを紐づけることができる
+// `:バックティック(shift+@)
 session_start();
 
 require 'validation.php';

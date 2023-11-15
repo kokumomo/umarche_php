@@ -26,7 +26,7 @@ if(!isset($request['gender'])){
     $errors[] = '「性別」は必須です。';
 }
 
-if(isset($request['age']) || 6 < $request['age']){
+if(empty($request['age']) || 6 < $request['age']){
     $errors[] = '「年齢」は必須です。';
 }
 

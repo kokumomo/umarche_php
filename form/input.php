@@ -63,12 +63,13 @@ if(!empty($_POST['btn_submit'])){
     ?>
     <br>
     年齢
-    <?php if($_POST['age'] === '1'){ echo '〜19歳';} 
-          if($_POST['age'] === '2'){ echo '20歳〜29歳';} 
-          if($_POST['age'] === '3'){ echo '30歳〜39歳';} 
-          if($_POST['age'] === '4'){ echo '40歳〜49歳';} 
-          if($_POST['age'] === '5'){ echo '50歳〜59歳';} 
-          if($_POST['age'] === '6'){ echo '60歳〜';} 
+    <?php
+      if($_POST['age'] === '1'){ echo '〜19歳' ;}
+      if($_POST['age'] === '2'){ echo '20歳〜29歳' ;}
+      if($_POST['age'] === '3'){ echo '30歳〜39歳' ;}
+      if($_POST['age'] === '4'){ echo '40歳〜49歳' ;}
+      if($_POST['age'] === '5'){ echo '50歳〜59歳' ;}
+      if($_POST['age'] === '6'){ echo '60歳〜' ;}
     ?>
     <br>
     お問い合わせ内容
@@ -91,6 +92,13 @@ if(!empty($_POST['btn_submit'])){
     
     <?php if($pageFlag === 2) : ?>
     <?php if($_POST['csrf'] === $_SESSION['csrfToken']) :?>
+
+    <!-- データベース保存 -->
+    <?php require '../mainte/insert.php'; 
+    
+    insertContact($_POST);
+    ?>
+    
     送信が完了しました。
 
     <?php unset($_SESSION['csrfToken']); ?>
@@ -149,15 +157,16 @@ if(!empty($_POST['btn_submit'])){
             </div>
 
             <div class="form-group">
-                <label for="age">年齢</label>
-                  <select class="form-control" id="age" name="age">
-                    <option value="">選択して下さい</option>
-                    <option value="1">20歳〜29歳</option>
-                    <option value="2">30歳〜39歳</option>
-                    <option value="3">40歳〜49歳</option>
-                    <option value="4">50歳〜59歳</option>
-                    <option value="5">60歳〜</option>
-                  </select>
+            <label for="age">年齢</label>
+            <select class="form-control" id="age" name="age">
+              <option value="">選択してください</option>
+              <option value="1">〜19歳</option>
+              <option value="2">20歳〜29歳</option>
+              <option value="3">30歳〜39歳</option>
+              <option value="4">40歳〜49歳</option>
+              <option value="5">50歳〜59歳</option>
+              <option value="6">60歳〜</option>
+            </select> 
             </div>
 
             <div class="form-group">

@@ -1,0 +1,22 @@
+71. Laravelのインストール
+　cd/Applications/MAMP/htdocs/laravel
+
+  composer create-project laravel/laravel:^9 --prefer-dist
+
+
+72. Laravelの初期設定
+  タイムゾーン / 言語設定
+  config/app.php
+
+  'timezone' => 'Asia/Tokyo';
+  'locale' => 'ja';
+
+  デバッグバーのインストール
+  composer require barryvdh/laravel-debugbar:^3.7
+
+  簡易サーバーを止める　Ctr+C
+
+
+73. キャッシュのクリア方法
+  php artisan cache:clear
+  php artisan config:clear

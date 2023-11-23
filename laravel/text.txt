@@ -1,11 +1,48 @@
-74. データベース設定・接続確認
-  phpMyAdminからデータベースとユーザーを作成
-  DB・・laravel_task
-  ユーザー laravel_user
-  パスワード・・password123
+75. Laravelの概要(MVCモデル＋ルーティング)
+  Model・・データベースとやり取り
+  View・・見た目
+  Conttoller・・見た目
+  Routing・・アクセスの振り分け
+  Migration・・DBテーブルの履歴管理
 
-  .envにも追記する
-  php artisan migrate　でテーブルが作成されたらOK
 
-  もしエラーが出たら
-  https//coinbaby8.com/access_denied.html
+78. Laravelモデル
+  ModelDBとやり取り
+  
+  ORM/ORマッパー・・  DBとのやり取りをSQLではなくて他の言語で書ける仕組みで
+  　　　　　　　　　　　Eloquentという名前で作られている
+  Object-Relational Mapping
+  オブジェクト関係マッピング
+
+  モデルファイルの作成　php artisan make:model Test
+
+  コントローラとマイグレーションも同時生成　php artisan make:model Test -mc
+
+
+79. Laravelマイグレーション
+  DBテーブルの履歴管理(テーブルの設定をPHPで書ける)
+  ファイル場所は　databases/migrations
+  モデルは単数形　マイグレーションは複数形でかくとLaravel側で自動判定してくれる　ex) Person -> piople
+
+  ファイル作成
+  php artisan make:migration create_tests_table
+  php artisan migrate // DBに反映
+
+  php artisan migrate:fresh // テーブルを全て削除し再生成
+  php artisan migrate:refresh // ロールバックして再生成
+
+
+80. Laravel tinker(DB簡易接続)
+  対話型　コマンド入力でデータ保存・閲覧できる
+  php artisan tinker
+  // 保存
+  $test = new App\Models\Test;
+  $test->text = "aaa";
+  $test->save();
+  App\Models\Test::all(); //全件表示
+
+
+81. Laravelコントローラ
+  php artisan make:controller TestController
+
+  app\Http\Controllers\配下に生成される

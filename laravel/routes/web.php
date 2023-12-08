@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\ContactFormController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +14,19 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('tests/test', [ TestController::class, 'index']);
+
+Route::resource('contacts', ContactFormController::class);
+
+// グループ化してまとめるとシンプルに書ける
+Route::prefix('contacts')
+->middleware(['auth'])
+->controller(ContactFormController::class)
+->name('contacts.')
+->group(function() {
+    Route::get('/', 'index')->name('index');
+});
 
 Route::get('/', function () {
     return view('welcome');

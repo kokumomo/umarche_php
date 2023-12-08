@@ -1,116 +1,220 @@
-![img](public/img/01_27.png)
+# 94. 概要モデル・マイグレーション
 
-# 85. エロクラントとコレクション型
+### 簡易Webアプリ
+   お問い合わせフォーム拡張版(CRUD)  
+   REST (RESTfulを活用)  
+   バリデーション  
+   ダミーデータ(シーダー/ファクトリー)　　
+   ベージネーション　　
+   簡易検索機能　　
+   Model -> Route -> Controller -> View
 
-### DBからデータを取得する
-DBから情報を取得する方法は大きく2つ
+### モデル・マイグレーション
+   -m でマイグレーションも同時作成  
+   モデルは単数形 マイグレーションファイルは複数形で生成される  
+   php artisan make:model ContactForm -m
+
+### xxx_create_contact_forms.php
 ```php
-1. Eloquent 
-use App\Models\Test;
-$tests = Test::all(); // モデル名::メソッド
-dd($tests); // コレクション型(配列を拡張した型)
+public function up()
+      { Schema::create('contact_forms', function (Blueprint $table) {
+         $table->id();
+         $table->string('name', 20); // 氏名
+         $table->string('email', 255); // メールアドレス
+         $table->longText('url')->nullable(); // url null可
+         $table->boolean('gender'); // 性別
+         $table->tinyInteger('age'); // 年齢
+         $table->string('contact', 200); // お問い合わせ内容
+         $table->timestamps(); });
 
-2. クエリビルダ
-DB::table('tests')->get(); // DBファサード
+      }
 ```
-### データ型のあれこれ
-```php
-allやgetを使うことでコレクション型になる
-(getをつけないとQueryBuilder途中(確定してない))
-$values = Test::all(); // Eloquent/Collection
-$count = Test::count(); // 数字
-$first = Test::findOrFail(1); // インスタンス
-$whereBBB = Test::where('text', '=', 'bbb'); // Eloquent/Builder
-$whereBBB = Test::where('text', '=', 'bbb')->get(); // Collection
-dd($values, $count, $first, $whereBBB);
-```
-
-# 86. クエリビルダ
-
-Select, where, groubpy orderByなどSQLに近い構文  
-rawで生のSQLも書ける(その場合はSQLインジェクションに注意)  
-getやfirstで確定、確定しなければQueryBuilder型
-
-```php
-use Illuminate\Support\Facades\DB;
-
-DB::table('tests')->where('text', '=', 'bbb')->select('id', 'text')->get(); // コレクション型
-DB::table('tests')->where('text', '=', 'bbb')->select('id', 'text'); // QueryBuilder
-```
-
-
-# 87. ファサード
-
-フランス語で正面入り口  
-よく使うファサード Auth(認証),DB(クエリビルダ),Hash(暗号化),Gate(認可),
-Log(ログ),Mail(メール),Route(ルーティング),Storage(ストレージ)
-
-ファサードの設定は config/app.phpのalias
-
-
-# 88. 起動処理DIとサービスコンテナ
-
-![img](public/img/06_88.png)
-
-
-# 90. フロントエンド
-
-![img](public/img/06_90.png)
-フロントエンドで新しい言語で書いてもGoogleClomeなどではそのまま表示できないので、コンパイルして新しい書き方から古い書き方に変換する。
-
-![img](public/img/06_90_2.png)
-ファイルが増えればその分読み込みに時間がかかってしまうので、
-バンドルして1つのファイルにまとめる
-最近ではViteが主流。
-
-これらvite,webpack,Loader,BABELなどをまとめて管理するのがNode.js(npm)でフロントエンドをまとめて動かす環境。
-package.jsonがフロントエンドの管理ファイル
-
-
-# 91. 認証(Vite と Laravel Breeze)
-
-Laravel Breezeでログイン、ユーザー登録、パスワードリセット、メール認証、
-パスワード確認機能を追加
-
- インストール
-composer require laravel/breeze:^1.13 --dev
-
-php artisan breeze:install
-composer.json 追記  tailwindcss,alpinejs
-App\Models\User.php 追記  Authenticatableクラスを継承して認証機能追加
-resources\css\app.css 追記 tailwind読み込む  
-下記が追加される  
-App/View/Components  
-resources/views/auth
-resources/views/components
-resources/views/layouts
-resources/views/dashboard.blade.php
-
 php artisan migrate
-npm install
-npm run dev // 開発サーバー起動(フロント側)
-※php artisan serveはサーバー側
 
-npm run build // 本番用にファイル出力
-build/assetsフォルダのファイルで古い言語に置き換える
+<br>
 
+# 95. マイグレーション・追加トロールバック
 
-# 92. 追加されたルーティング情報を確認してみる
-
-routes/web.phpの内容が書き変わって、
-require __DIR__.'/auth.php'; を読み込んで、
-routes/auth.phpにルーティングが記載されて、コントローラーを読み込んで、
-App/Controllers/Authフォルダに8つのファイルが生成される
-
-
-# 93. エラーメッセージの日本語化
-
-1. マニュアルの言語ファイルをlang/ja/配下にそれぞれ配置する
-   lang/ja/auth.php, pagination.php, password.php, validation.php
-2. validation.php の 'attributes' に追記
-   'attributes' => ['password' => 'パスワード]
-3. ja.jsonファイルを作成
-   lang/ja.json
-   {
-    "Whoops! Something went wrong.":"何か問題が発生しました。"
+### マイグレーションは履歴管理
+後から列を追加・削除なども履歴を残せる  
+php artisan make:migration add_title_to_contact_forms_table  
+```php
+public function up() //追加
+   { Schema::table('contact_forms', function (Blueprint $table) {
+      $table->string('title', 50)->after('name'); });
    }
+
+public function down() // ロールバック
+   { Schema::table('contact_forms', function (Blueprint $table) {
+      $table->dropColumn('title');});
+   }
+```
+
+php artisan make:migration add_title_to_contact_forms_table
+
+   php artisan migrate // マイグレーション実施  
+   php artisan migrate:status // 状態表示  
+   php artisan migrate:rollback // 一つ戻す  
+   php artisan migrate:rollback --step=2 // 2つ戻す  
+   php artisan migrate:refresh // ロールバックして再実行  
+   php artisan migrate:fresh // テーブル削除して再実行  
+
+<br>
+
+# 96. 以前書いていたコードの復元
+
+LaravelBreezeインストールしたことでrouteファイルが書き変わっている  
+routes/web.php  
+use App\Http\Controllers\TestController
+
+Route::get('tests/test', [ TestController::class, 'index']);  
+
+migrate:freshするとDB内データが全て削除されるので事前に　　
+ダミーデータを作っておくのが一般的  
+
+<br>
+
+# 97. RestFulなコントローラー  
+
+### リソースコントローラー
+コントローラ側でよく使うメソッドをまとめて作る仕組み  
+php artisan make:controller ContactFormController --resource  
+
+| 動詞  | URL | アクション      | ルート名 | 
+| :-: | -------- | ---------: | -------: | 
+| GET | /contacts | index | photes.index | 
+| GET | /contacts/create | create | photes.create | 
+| POST| /contacts | store | photes.store | 
+| GET | /contacts/(contact) | show | photes.show | 
+| GET | /contacts/(contact)/edit | edit | photes.edit | 
+| PUT/PATCH | /contacts/(contact) | update | photes.update | 
+| DELETE | /contacts/(contact) | destroy | photes.destroy | 
+
+use App\Http\Controllers\ContactFormController;
+Route::resource('contacts', ContactFormController::class);
+
+<br>
+
+# 98. ルーティング(グループ・認証)
+
+### routes/web.php
+```php
+use App\Http\Controllers\ContactFormController.php
+
+// 1行ずつ書いた場合
+Route::get('contacts', [ContactFormController::class, 'index'])->name('contacts.index');
+
+// グループ化してまとめるとシンプルに書ける
+Route::prefix('contacts') // 頭にcontactsをつける(フォルダ名)
+   ->middleware(['auth']) // 認証
+   ->controller(ContactFormController::class) // コントローラ指定
+   ->group(function() {// グループ化
+      Route::get('/', 'index')->name('index'); // 名前付きルート
+});
+```
+app/Http/Controller/ContactFormController.php  
+```php
+ public function index()
+    {
+        return view('contacts.index');
+    }
+```
+resources/views/contacts/index.blade.php  
+```php
+<p>contacts.index</p>
+```
+
+<br>
+
+# 99. Bladeコンポーネントについて(login.blade.php)
+
+### auth/login.blade.php　　
+頭にx-とつくのはBladeコンポーネント(部品)  
+
+クラスを使うパターン  
+先にresources側を見て、なかったらクラス側も見てみる  
+app/View/Components/GuestLayout.php  
+
+```php
+<?php
+
+namespace App\View\Components;
+
+use Illuminate\View\Component;
+use Illuminate\View\View;
+
+class GuestLayout extends Component
+{
+    public function render(): View
+    {
+        return view('layouts.guest');
+    }
+}
+```
+
+<br>
+
+# 100. スロット、名前付きスロットなど
+
+### スロット  
+```php
+ヘッダー・フッター共通の箇所をまとめたり  
+一部だけ他の表示に差し替えたりできる機能
+
+layouts/guest.blade.phpの {{ $slot }} は  
+resources/views/auth/login.blade.phpの<x-guest-layout>にあたる  
+
+
+<x-auth-card>
+   <x-slot name="logo"> 名前付きスロット
+</x-auth-card>
+x-auth-card.blade.php
+{{ $logo }} 名前付きスロット
+```
+
+<br>
+
+# 101. form, 多言語, tailwindcss
+```php
+
+<x-guest-layout>
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+    <form method="POST" action="{{ route('login') }}"> //actionはformの飛び先
+        @csrf
+```
+
+<br>
+
+# 102. app.blade.php と navigation.blade.php
+
+app/View/Components/AppLayout.php   
+```php
+<?php
+
+namespace App\View\Components;
+
+use Illuminate\View\Component;
+use Illuminate\View\View;
+
+class AppLayout extends Component
+{
+    public function render(): View
+    {
+        return view('layouts.app');
+    }
+}
+```
+
+
+resource/views/laytouts/app.blade.php  
+```php
+<body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100">
+            @include('layouts.navigation')
+```
+
+
+resources/views/layouts/navigation.blade.php
+

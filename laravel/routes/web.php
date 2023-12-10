@@ -25,7 +25,8 @@ Route::prefix('contacts')
 ->controller(ContactFormController::class)
 ->name('contacts.')
 ->group(function() {
-    Route::get('/', 'index')->name('index');
+Route::get('/', 'index')->name('index');
+Route::get('/create', 'create')->name('create');
 });
 
 Route::get('/', function () {
@@ -43,3 +44,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+

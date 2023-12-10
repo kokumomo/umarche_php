@@ -218,3 +218,97 @@ resource/views/laytouts/app.blade.php
 
 resources/views/layouts/navigation.blade.php
 
+# 103. Create 新規登録 レイアウト調整
+
+resources/views/contacts/index.blade.php
+```php
+<<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('お問い合わせ一覧') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    {{ __("いんでっくす") }}<br>
+                    <a href="{{ route('contacts.create') }}">新規登録</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
+
+routes/web.php
+```php
+Route::prefix('contacts')
+->middleware(['auth'])
+->controller(ContactFormController::class)
+->name('contacts.')
+->group(function() {
+    Route::get('/', 'index')->name('index');
+    Route::get('/create', 'create')->name('create');
+});
+```
+app/Http/Controllers/ContactFormController.php
+```php
+public function create()
+    {
+        return view('contacts.create');
+    }
+```
+
+resources/views/contacts/create.blade.php
+```php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('新規作成') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    {{ __("くりえいと") }}<br>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
+
+### Index と create を作ってみる
+フォームレイアウトは TailBlocks を参照  
+Contact の3つ目
+
+
+<br>
+
+# 104. Createフォーム
+
+### Create.blade.php
+
+```php
+<form method="post" action="{{ route('contacts.store') }}">
+ // 氏名、件名、メールアドレス、ホームページ、性別、年齢、お問い合わせ内容、注意事項に同意する
+<select name="age">
+   <option value="">選択してください</option>
+   <option value="1">〜19歳</option>
+   <option value="2">20歳〜29歳</option>
+   <option value="3">30歳〜39歳</option>
+   <option value="4">40歳〜49歳</option>
+   <option value="5">50歳〜59歳</option>
+   <option value="6">60歳〜</option>
+</select>
+</form>
+```
+
+
+```php
+
+```

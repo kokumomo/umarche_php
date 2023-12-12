@@ -286,7 +286,6 @@ resources/views/contacts/create.blade.php
 フォームレイアウトは TailBlocks を参照  
 Contact の3つ目
 
-
 <br>
 
 # 104. Createフォーム
@@ -308,7 +307,84 @@ Contact の3つ目
 </form>
 ```
 
+<br>
 
+# 105. Store Requestクラス
+
+route/web.php
 ```php
+Route::prefix('contacts')
+->middleware(['auth'])
+->controller(ContactFormController::class)
+->name('contacts.')
+->group(function() {
+Route::get('/', 'index')->name('index');
+Route::get('/create', 'create')->name('create');
+Route::post('/', 'store')->name('store');
+});
+```
+### コントローラ
+ContactFormController.php  
+フォーム登録・・PHPでは$_POSTなど。LaravelではRequestクラス  
+引数に(Request $request)  
+DI(Dependency Injection 依存性の注入)  
+(メソッドインジェクションとも呼ばれる)  
+Requestをインスタンス化したものが入ってくる  
+Requestクラス自体はvendor/laravel/framework/src/Illuminate/Http/Request.php  
+
+app/Http/Controllers/ContactFormController.php
+```php
+public function store(Request $request)
+{
+    dd($request, $request->name);
+}
+```
+
+app/Http/Controllers/ContactFormController.php
+```php
+<section class="text-gray-600 body-font relative">
+    <form method="post" action="{{ route('contacts.store') }}">
+        @csrf
+```
+<br>
+
+# 106. Store 保存
+
+app/Models/ContactForm.php
+```php
+class ContactForm extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'title',
+        'email',
+        'url',
+        'gender',
+        'age',
+        'contact'
+    ];
+}
+```
+
+app/Http/Controllers/ContactFormController.php
+```php
+public function store(Request $request)
+    {
+        // dd($request, $request->name);
+
+        ContactForm::create([
+            'name' => $request->name,
+            'title' => $request->title,
+            'email' => $request->email,
+            'url' => $request->url,
+            'gender' => $request->gender,
+            'age' => $request->age,
+            'contact' => $request->contact,
+        ]);
+
+        return to_route('contacts.index');
+    }
 
 ```

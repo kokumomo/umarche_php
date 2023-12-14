@@ -388,3 +388,25 @@ public function store(Request $request)
     }
 
 ```
+
+<br>
+
+# 107. index画面、ナビゲーション追加
+
+### Index
+
+データベースから情報取得  
+ContactformController.php
+```php
+public function index()
+{ $contacts = ContactForm::select('id', 'name', 'title', 'created_at')->get();
+return view('contacts.index', compact('contacts'));
+}
+```
+
+resources/views/contacts/index.bladde.php  
+```php
+@foreach($contacts as $contact)
+{{ $contact->id }} {{ $contact->name}}  {{ $contact->title}}  {{ $contact->created_at}}
+@endforeach
+```

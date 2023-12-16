@@ -410,3 +410,96 @@ resources/views/contacts/index.bladde.php
 {{ $contact->id }} {{ $contact->name}}  {{ $contact->title}}  {{ $contact->created_at}}
 @endforeach
 ```
+
+<br>
+
+# 108. show詳細表示画面 その１
+
+### Show
+ルート->コントローラー->ビュー  
+routes/web.php  
+```php
+略->group(function(){
+    Route::get('/{id}', 'show')->name('show');//
+});  
+```
+
+ContactFormController.php  
+```php
+public function show($id) // 引数にid
+{
+    $contact = ContactForm::find($id); // 1件だけ取得
+    return view('contacts.show', compact('contact'));
+}
+```
+
+resources/views/contacts/show.blade.php
+```php
+{{ $contact->id }} // 1件なのでforeachは不要
+```
+
+resources/views/contacts/index.blade.php  
+```php
+<a href="{{ route('contacts.show', ['id' => $contact->id]) }}">詳細を見る</a>
+```
+
+<br>
+
+# 109. show詳細表示画面 その2
+
+### 詳細画面のフォームにデータベースに入っている情報を表示させる
+{{ $contact->id }} {{ $contact->name }}で表示が可能  
+
+resources/views/contacts/show.blade.php
+```php
+<div>
+    <label for="name">氏名</label>
+    <div>{{ $contact->name }}</div>            
+
+    <label for="title">件名</label>
+    <div>{{ $contact->title }}</div>            
+
+    <label for="email">メールアドレス</label>
+    <div>{{ $contact->email }}</div>            
+
+    <label for="url">ホームページ</label>
+    @if($contact->url) //urlの有無を判定
+    <div>{{ $contact->url }}</div>
+    @endif            
+
+    <label>性別</label><br>
+    <div>{{ $gender }}</div>
+
+    <label for="age">年齢</label>
+    <div>{{ $age }}</div>
+
+    <label for="contact">お問い合わせ内容</label>
+    <div>{{ $contact->contact }}</div>
+
+    <button>新規登録する</button>
+</div>
+```
+
+### 性別・年齢の表示を変える
+app/Http/Controllers/ContactFormController.php
+```php
+ public function show($id)
+    {
+        $contact = ContactForm::find($id); // 1件だけ取得
+
+        if($contact->gender === 0 ){
+            $gender = '男性';
+        } else {
+            $gender = '女性';
+        }
+
+        if($contact->age === 1){ $age = '〜19歳'; }
+        if($contact->age === 2){ $age = '20歳〜29歳'; }
+        if($contact->age === 3){ $age = '30歳〜39歳'; }
+        if($contact->age === 4){ $age = '40歳〜49歳'; }
+        if($contact->age === 5){ $age = '50歳〜59歳'; }
+        if($contact->age === 6){ $age = '60歳〜'; }
+
+        return view('contacts.show', compact('contact', 'gender', 'age'));
+    }
+```

@@ -28,6 +28,7 @@ Route::prefix('contacts')
 Route::get('/', 'index')->name('index');
 Route::get('/create', 'create')->name('create');
 Route::post('/', 'store')->name('store');
+Route::get('/{id}', 'show')->name('show');//
 });
 
 Route::get('/', function () {

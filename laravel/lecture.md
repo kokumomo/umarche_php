@@ -433,11 +433,13 @@ public function show($id) // 引数にid
 }
 ```
 
+いったん新規に作成した詳細画面にデータベースからidで紐付けた情報を表示させる  
 resources/views/contacts/show.blade.php
 ```php
-{{ $contact->id }} // 1件なのでforeachは不要
+{{ $contact->id }} {{ $contact->name }}// 1件なのでforeachは不要
 ```
 
+詳細画面に遷移するリンクを作成  
 resources/views/contacts/index.blade.php  
 ```php
 <a href="{{ route('contacts.show', ['id' => $contact->id]) }}">詳細を見る</a>
@@ -502,4 +504,144 @@ app/Http/Controllers/ContactFormController.php
 
         return view('contacts.show', compact('contact', 'gender', 'age'));
     }
+```
+
+<br>
+
+# 110. edit 編集画面
+
+### Edot ルート・コントローラ
+ルート->コントローラ->ビュー  
+routes/web.php  
+```php
+Route::get('/{id}/edit', 'edit')->name('edit');//
+```
+
+resources/views/contacts/show.blade.php
+```php
+<form mehtod="get" action="{{ route('contacts.edit', ['id' => $contact->id ])}}">
+<div class="p-2 w-full">
+    <button>編集する</button>
+</div>
+</form>
+```
+
+ContactFormController.php  
+```php
+public function edit($id) // 引数にid
+{
+    $contact = ContactForm::find($id); // 1件だけ取得
+    return view('contacts.edit', compact('contact'));
+}
+```
+
+resources/views/contacts/edit.blade.php
+```php
+<label for="name">氏名</label>
+<input type="text" id="name" name="name" value="{{ $contact->name }}">
+
+<label for="title">件名</label>
+<input type="text" id="title" name="title" value="{{ $contact->title }}">
+
+<label for="email">メールアドレス</label>
+<input type="email" id="email" name="email" value="{{ $contact->email }}">
+
+<label for="url">ホームページ</label>
+<input type="url" id="url" name="url" value="{{ $contact->url }}">
+
+// 年齢と性別はタグの中に@ifで判定を入れる
+<label>性別</label><br>
+<input type="radio" name="gender" value="0" @if($contact->gender == 0) checked @endif>男性
+<input type="radio" name="gender" value="1" @if($contact->gender == 1) checked @endif>女性
+
+<label for="age">年齢</label>
+<select name="age">
+    <option value="">選択してください</option>
+    <option value="1" @if($contact->age == 1) selected @endif>〜19歳</option>
+    <option value="2" @if($contact->age == 2) selected @endif>20歳〜29歳</option>
+    <option value="3" @if($contact->age == 3) selected @endif>30歳〜39歳</option>
+    <option value="4" @if($contact->age == 4) selected @endif>40歳〜49歳</option>
+    <option value="5" @if($contact->age == 5) selected @endif>50歳〜59歳</option>
+    <option value="6" @if($contact->age == 6) selected @endif>60歳〜</option>
+</select>
+
+<label for="contact">お問い合わせ内容</label>
+<textarea id="contact" name="contact">{{ $contact->contact }}</textarea>
+
+<button>新規登録する</button>
+```
+
+<br>
+
+# 111. update 更新画面
+
+ルート->コントローラ->ビュー  
+routes/web.php  
+```php
+Route::post('/{id}/update', 'update')->name('update');
+```
+
+ContactFormController.php  
+```php
+public function update($id) 
+{
+    $contact = ContactForm::find($id);
+    // フォームに入ってきた情報をデータベースに登録(上書き保存)
+    $contact->name = $request->name;
+    $contact->title = $request->title;
+    $contact->email = $request->email;
+    $contact->url = $request->url;
+    $contact->gender = $request->gender;
+    $contact->age = $request->age;
+    $contact->contact = $request->contact;
+    $contact->save();
+
+    return to_route('contacts.index');
+}
+```
+
+resources/views/contacts/edit.blade.php
+```php
+<form method="post" action="{{ route('contacts.update', ['id' => $contact->id ]) }}">
+```
+
+<br>
+
+# 112. destroy 削除機能
+
+ルート->コントローラ->ビュー  
+routes/web.php  
+```php
+Route::post('/{id}/destroy', 'destroy')->name('destroy');
+```
+
+ContactFormController.php  
+```php
+public function destroy($id)
+    {
+        $contact = ContactForm::find($id);
+        $contact->delete();
+
+        return to_route('contacts.index');
+    }
+```
+
+resources/views/contacts/show.blade.php
+```php
+    <form id="delete_{{ $contact->id }}" class="mt-40" method="post" action="{{ route('contacts.destroy', ['id' => $contact->id ])}}">
+    @csrf
+    <div class="p-2 w-full">
+    <a href="#" data-id="{{ $contact->id }}" onclick="deletePost(this)" class="flex mx-auto text-white bg-pink-500 border-0 py-2 px-8 focus:outline-none hover:bg-pink-600 rounded text-lg">削除する</a>
+    </div>
+</form>
+
+<!-- 確認メッセージ -->
+<script>
+    function deletePost(e){
+        'use strict'
+        if(confirm('本当に削除してよろしいですか？')){
+            document.getElementById('delete_' + e.dataset.id).submit()
+        }
+    }
+</script>
 ```
